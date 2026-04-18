@@ -6,7 +6,7 @@ const styles = StyleSheet.create ({
         padding: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#ffffff',  
+        backgroundColor: '#f1f1f1',  
     },
 
     header: {
@@ -17,7 +17,9 @@ const styles = StyleSheet.create ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    
+
+    borderWidth:  2,
+    borderColor: '#a07e28',
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     borderTopEndRadius: 20,

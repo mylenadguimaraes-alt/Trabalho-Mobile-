@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, ScrollView, Image, TouchableOpacity} from 'react-native';
-import  styles  from '../style/style_home'
+import  styles  from './style/style_home'
 import useUser from './user/user';
 import { useState } from 'react';
 
@@ -15,7 +15,7 @@ export default function Home() {
       {/* HEADER */}
       <View style={styles.header}>
 
-        <Image style = {styles.logo} source={require('../img/logo.png')}/>
+        <Image style = {styles.logo} source={require('./img/logo.png')}/>
 
         <TouchableOpacity > 
           <View style = {styles.user_log}>
