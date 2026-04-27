@@ -10,7 +10,7 @@ const styles = StyleSheet.create ({
         backgroundColor: '#f1f1f1',  
     },
 
-    login:{
+    login:{ 
         width: '100%',
         padding: 30,
         backgroundColor: '#ffe6fd',
@@ -28,10 +28,9 @@ const styles = StyleSheet.create ({
     },
 
     cadastro:{
-        width: '100%',
-        padding: 30,
+        flex: 1, 
         backgroundColor: '#ffe6fd',
-    
+        padding: 10,
         
         alignItems: 'flex-start',
         justifyContent: 'center',
@@ -44,10 +43,26 @@ const styles = StyleSheet.create ({
         borderTopStartRadius: 20,
     },
 
+    cadastro_scroll:{
+        flexGrow: 1,
+        alignItems: 'stretch',
+    },
+
+    dentro_cad_scroll:{
+        width: '100%', 
+        overflow: 'hidden', 
+        maxWidth: '100%',
+        paddingTop: 5,
+        padding: 20,
+        paddingEnd: 30,
+    },
+
+
     title_container: {
         paddingTop: 10,
         paddingBottom: 10,
         alignSelf: 'center', 
+
     },
 
     title: {
@@ -69,6 +84,8 @@ const styles = StyleSheet.create ({
         color: '#a07e28',
         backgroundColor: '#ffffff6c',
         width: '100%',
+        height: 55,
+        paddingHorizontal: 15,
         borderWidth:  2,
         borderColor: '#a07e28',
         borderRadius: 20,
@@ -121,6 +138,8 @@ const styles = StyleSheet.create ({
         borderRadius: 20,
     },
 
+
+    
     
 
 });

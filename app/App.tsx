@@ -1,6 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Login_cadastro from './pag/login_cadastro';
+import Login_cadastro from './pag/login_cadastro_cliente';
 
 const Stack = createNativeStackNavigator();
 
