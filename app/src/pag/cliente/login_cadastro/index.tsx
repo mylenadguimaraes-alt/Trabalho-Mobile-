@@ -1,9 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, TextInput, Alert, Modal, Pressable, ScrollView, Image, TouchableOpacity} from 'react-native';
-import  styles  from './style/style_login_cadastro';
+import  styles  from './style';
 import { useState } from 'react';
-import {db} from './bd/conexaobd';
-import { CpfExistente, EmailExistente, cadastrar } from './Validacoes/login_cadastro';
+
+import { CpfExistente, EmailExistente, cadastrar, VerificarServidor} from '../../../global/Validacoes/login_cadastro';
 
 export default function Login_cadastro() {
 
@@ -52,8 +52,16 @@ export default function Login_cadastro() {
     
     //LOGIN
 
-    const handleLogin = () =>
+    const handleLogin = async () =>
     {
+      const online = await VerificarServidor();
+
+      if (!online) {
+        return;
+      }
+
+    
+
       //Preencha os campos
       if (!emaillogin || !senhaLogin) {
         Alert.alert(
@@ -71,31 +79,19 @@ export default function Login_cadastro() {
         return;
 
       };
-      
-      try {
-        
-        const user = db.getFirstSync('SELECT * FROM cliente WHERE email = ?', [emaillogin]);
-        
-        if (!user)
-        {
-          Alert.alert("Erro", "Usuário não encontrado");
-          return;
-        }
-
-
-        Alert.alert('Sucesso', 'Banco conectado!');
-      } catch (error) {
-        console.log(error);
-        Alert.alert('Erro', 'Falha na conexão');
-      }
-      
-
+   
     };
 
     //Cadastro
 
-    const handleCadastro = () =>{
+    const handleCadastro = async () =>{
       
+      const online = await VerificarServidor();
+
+      if (!online) {
+        return;
+      }
+
       if(!nome || !cpf || !dataNascimento || !emailcadastro || !telefone || !senhacad || !senhacadCon){
         Alert.alert(
           'Campos obrigatórios',
@@ -132,7 +128,7 @@ export default function Login_cadastro() {
 
       try{
 
-        if(CpfExistente('cliente',cpf)){
+        if (await CpfExistente('cliente',cpf)){
           Alert.alert(
             "CPF inválido",
             "CPF já cadastrado!",
@@ -164,6 +160,7 @@ export default function Login_cadastro() {
         return;
 
       }
+      
 
       
       if (dataNascimento.length !=  10){
@@ -185,7 +182,7 @@ export default function Login_cadastro() {
 
 
       try{
-        if(EmailExistente('cliente',emailcadastro)){
+        if(await EmailExistente('cliente',emailcadastro)){
           Alert.alert(
             "E-mail inválido",
             "E-mail já cadastrado!",
@@ -232,10 +229,25 @@ export default function Login_cadastro() {
         return;
       }
 
+      if (senhacad != senhacadCon){
+        Alert.alert(
+          "Erro",
+          "As senhas não coincidem!",
+          [
+            {
+              text: 'ok',
+              onPress: () => console.log('Usuário fechou o alerta'),
+            },
+          ],
+          {cancelable: true}
+        )
+        return;
+      }
+
       
 
       try{
-        if(cadastrar('cliente', nome, cpf, dataNascimento, emailcadastro, telefone)){
+        if(await cadastrar('cliente', nome, cpf, dataNascimento, emailcadastro, telefone, senhacad)){
           Alert.alert(
             "Cadastro concluído",
             "Os dados foram cadastrados, volte ao login para entrar no app!",
@@ -254,7 +266,7 @@ export default function Login_cadastro() {
       }catch(error){
         Alert.alert(
           "Erro!",
-          "Erro ao verificar cadastrar",
+          "Erro ao cadastrar",
           [
             {
               text: "ok",
@@ -265,11 +277,8 @@ export default function Login_cadastro() {
         );
         return;
       }
-  
-      
-
-      
-
+      LimparDadosCad();
+    
     };
 
     const handleCpf = (text: string) => {
@@ -351,9 +360,9 @@ export default function Login_cadastro() {
               <Pressable onPress={() => {setbuttonsenhalogin(!buttonsenhalogin)}}>
                 <View style={{ marginLeft: 10 }}>
                   {buttonsenhalogin ? (
-                    <Image style = {styles.senha_imagem} source={require('./img/olhofechado.png')} />
+                    <Image style = {styles.senha_imagem} source={require('../../img/olhofechado.png')} />
                   ) : (
-                    <Image style = {styles.senha_imagem} source={require('./img/olhoaberto.png')} />
+                    <Image style = {styles.senha_imagem} source={require('../../img/olhoaberto.png')} />
                 )}
                 </View>
               </Pressable>
@@ -457,9 +466,9 @@ export default function Login_cadastro() {
                   <Pressable onPress={() => {setbuttonsenhacad(!buttonsenhacad)}}>
                     <View style={{ marginLeft: 10 }}>
                     {buttonsenhacad ? (
-                      <Image style = {styles.senha_imagem} source={require('./img/olhofechado.png')} />
+                      <Image style = {styles.senha_imagem} source={require('../../img/olhofechado.png')} />
                     ) : (
-                      <Image style = {styles.senha_imagem} source={require('./img/olhoaberto.png')} />
+                      <Image style = {styles.senha_imagem} source={require('../../img/olhoaberto.png')} />
                     )}
                     </View>
                   </Pressable>
@@ -476,9 +485,9 @@ export default function Login_cadastro() {
                   <Pressable onPress={() => {setbuttonsenhacadcon(!buttonsenhacadcon)}}>
                     <View style={{ marginLeft: 10 }}>
                     {buttonsenhacadcon ? (
-                      <Image style = {styles.senha_imagem} source={require('./img/olhofechado.png')} />
+                      <Image style = {styles.senha_imagem} source={require('../../img/olhofechado.png')} />
                     ) : (
-                      <Image style = {styles.senha_imagem} source={require('./img/olhoaberto.png')} />
+                      <Image style = {styles.senha_imagem} source={require('../../img/olhoaberto.png')} />
                     )}
                     </View>
                   </Pressable>

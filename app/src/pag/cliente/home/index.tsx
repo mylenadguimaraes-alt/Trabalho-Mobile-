@@ -1,13 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, ScrollView, Image, TouchableOpacity} from 'react-native';
-import  styles  from './style/style_home'
-import useUser from './user/user';
+import  styles  from './style'
+
 import { useState } from 'react';
 
 
 export default function Home() {
 
-    const {user} = useUser();
+    
 
   return (
     <View style = {styles.container}>
@@ -15,11 +15,11 @@ export default function Home() {
       {/* HEADER */}
       <View style={styles.header}>
 
-        <Image style = {styles.logo} source={require('./img/logo.png')}/>
+        <Image style = {styles.logo} source={require('../../img/logo.png')}/>
 
         <TouchableOpacity > 
           <View style = {styles.user_log}>
-            <Text style = {styles.text_user_log}>{user}</Text>
+            <Text style = {styles.text_user_log}>r</Text>
           </View>
         </TouchableOpacity>
       </View>
