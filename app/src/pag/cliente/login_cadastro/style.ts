@@ -1,146 +1,159 @@
 import { StyleSheet } from "react-native";
 
-const styles = StyleSheet.create ({
-    
-    container:{
-        flex: 1,
-        padding: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f1f1f1',  
+const styles = StyleSheet.create({
+
+container: {
+  flex: 1,
+  backgroundColor: '#f7f7f7',
+  padding: 20,
+},
+  login: {
+    width: '100%',
+    maxWidth: 420,
+
+    backgroundColor: '#fff',
+
+    borderRadius: 30,
+    padding: 30,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
     },
 
-    login:{ 
-        width: '100%',
-        padding: 30,
-        backgroundColor: '#ffe6fd',
-    
-        
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-    
-        borderWidth:  2,
-        borderColor: '#a07e28',
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        borderTopEndRadius: 20,
-        borderTopStartRadius: 20,
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+
+    elevation: 6,
+  },
+
+  cadastro: {
+    width: '100%',
+    maxWidth: 450,
+    alignSelf: 'center',
+    marginVertical: 30,
+
+    backgroundColor: '#fff',
+
+    borderRadius: 30,
+    padding: 30,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
     },
 
-    cadastro:{
-        flex: 1, 
-        backgroundColor: '#ffe6fd',
-        padding: 10,
-        
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-    
-        borderWidth:  2,
-        borderColor: '#a07e28',
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-        borderTopEndRadius: 20,
-        borderTopStartRadius: 20,
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+
+    elevation: 6,
+  },
+
+  cadastro_scroll: {
+    paddingBottom: 20,
+  },
+
+  dentro_cad_scroll: {
+    width: '100%',
+  },
+
+  title_container: {
+    alignItems: 'center',
+    marginBottom: 25,
+  },
+
+  title: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#2d2d2d',
+  },
+
+  text: {
+    fontSize: 15,
+    color: '#666',
+    marginBottom: 8,
+    marginTop: 12,
+    marginLeft: 3,
+  },
+
+  input: {
+    width: '100%',
+    height: 58,
+
+    borderWidth: 1.5,
+    borderColor: '#e7d8b5',
+
+    borderRadius: 18,
+
+    paddingHorizontal: 18,
+
+    backgroundColor: '#fcfcfc',
+
+    fontSize: 16,
+    color: '#333',
+  },
+
+  senha: {
+    flexDirection: 'row',
+    alignItems: 'center',
+
+    width: '100%',
+
+    borderWidth: 1.5,
+    borderColor: '#e7d8b5',
+
+    borderRadius: 18,
+
+    paddingHorizontal: 10,
+
+    backgroundColor: '#fcfcfc',
+  },
+
+  input_senha: {
+    flex: 1,
+    height: 58,
+    fontSize: 16,
+    color: '#333',
+  },
+
+  senha_imagem: {
+    width: 26,
+    height: 26,
+    resizeMode: 'contain',
+  },
+
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 30,
+  },
+
+  button_item: {
+    flex: 1,
+
+    backgroundColor: '#a07e28',
+
+    paddingVertical: 16,
+
+    borderRadius: 18,
+
+    alignItems: 'center',
+
+    marginHorizontal: 5,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
     },
 
-    cadastro_scroll:{
-        flexGrow: 1,
-        alignItems: 'stretch',
-    },
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
 
-    dentro_cad_scroll:{
-        width: '100%', 
-        overflow: 'hidden', 
-        maxWidth: '100%',
-        paddingTop: 5,
-        padding: 20,
-        paddingEnd: 30,
-    },
-
-
-    title_container: {
-        paddingTop: 10,
-        paddingBottom: 10,
-        alignSelf: 'center', 
-
-    },
-
-    title: {
-        fontSize: 30,
-        color: '#a07e28',
-        fontWeight: 'bold',
-    },
-
-    text: {
-        paddingTop: 10,
-        paddingBottom: 10,
-        fontSize: 18,
-        color: '#a07e28',
-    },
-
-    input: {
-        padding: 15,
-        margin: 5,
-        color: '#a07e28',
-        backgroundColor: '#ffffff6c',
-        width: '100%',
-        height: 55,
-        paddingHorizontal: 15,
-        borderWidth:  2,
-        borderColor: '#a07e28',
-        borderRadius: 20,
-        fontSize: 18,
-        
-    },
-
-    input_senha: {
-        padding: 15,
-        margin: 5,
-        color: '#a07e28',
-        backgroundColor: '#ffffff6c',
-        width: '85%',
-        borderWidth:  2,
-        borderColor: '#a07e28',
-        borderRadius: 20,
-        fontSize: 18,
-        
-    },
-
-    senha: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-
-    },
-
-    senha_imagem: {
-        width: 40,
-        height: 30,  
-
-    },
-
-    buttons: {
-        width: '100%',
-        padding: 30,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-
-    button_item: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 10,
-        margin: 5,
-        width: '50%',
-        borderWidth:  2,
-        borderColor: '#a07e28',
-        borderRadius: 20,
-    },
-
-
-    
-    
+    elevation: 5,
+  },
 
 });
 

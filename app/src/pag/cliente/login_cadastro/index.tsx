@@ -1,560 +1,589 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, TextInput, Alert, Modal, Pressable, ScrollView, Image, TouchableOpacity} from 'react-native';
-import  styles  from './style';
+import {
+  Text,
+  View,
+  TextInput,
+  Alert,
+  Pressable,
+  ScrollView,
+  Image,
+} from 'react-native';
+import styles from './style';
 import { useState } from 'react';
+import {
+  salvarCliente,
+  buscarClientePorEmail,
+} from '../../../global/database/cliente';
 
-import { CpfExistente, EmailExistente, cadastrar, VerificarServidor} from '../../../global/Validacoes/login_cadastro';
+import {
+  setUsuarioLogado,
+} from '../../../global/session';
 
-export default function Login_cadastro() {
+export default function Login_cadastro({ navigation }: any) {
 
-    //IR PARA CADASTRO E IR PARA LOGIN
-    const [login, setlogin] = useState<boolean>(true);
-    
-    //LOGIN
-    const [emaillogin, setemaillogin] = useState<string>('');
+  //LOGIN OU CADASTRO
+  const [login, setlogin] = useState<boolean>(true);
 
-    const [senhaLogin, setsenhalogin] = useState<string>('');
+  //LOGIN
+  const [emaillogin, setemaillogin] = useState<string>('');
+  const [senhaLogin, setsenhalogin] = useState<string>('');
+  const [buttonsenhalogin, setbuttonsenhalogin] = useState<boolean>(true);
 
-    const [buttonsenhalogin, setbuttonsenhalogin] = useState<boolean>(true);
+  //CADASTRO
+  const [nome, setnome] = useState<string>('');
+  const [cpf, setcpf] = useState<string>('');
+  const [dataNascimento, setDataNascimento] = useState<string>('');
+  const [emailcadastro, setemailcadastro] = useState<string>('');
+  const [telefone, settelefone] = useState<string>('');
+  const [senhacad, setsenhacad] = useState<string>('');
+  const [senhacadCon, setsenhacadCon] = useState<string>('');
+  const [buttonsenhacad, setbuttonsenhacad] = useState<boolean>(true);
+  const [buttonsenhacadcon, setbuttonsenhacadcon] = useState<boolean>(true);
 
-    //CADASTRO
+  //LIMPAR CAMPOS
+  const LimparDadosCad = () => {
 
-    const [nome, setnome] = useState<string>('');
+    setnome('');
+    setcpf('');
+    setDataNascimento('');
+    setemailcadastro('');
+    settelefone('');
+    setsenhacad('');
+    setsenhacadCon('');
 
-    const [cpf, setcpf] = useState<string>('');
+  };
 
-    const [dataNascimento, setDataNascimento] = useState<string>('');
+  //LOGIN
+  const handleLogin = async () => {
 
-    const [emailcadastro, setemailcadastro] = useState<string>('');
+  if (!emaillogin || !senhaLogin) {
 
-    const [telefone, settelefone] = useState<string>('');
+    Alert.alert(
+      'Campos obrigatórios',
+      'Por favor, preencha e-mail e senha.'
+    );
 
-    const [senhacad, setsenhacad] = useState<string>('')
+    return;
 
-    const [senhacadCon, setsenhacadCon] = useState<string>('');
+  }
 
-    const [buttonsenhacad, setbuttonsenhacad] = useState<boolean>(true);
+  const cliente =
+    buscarClientePorEmail(
+      emaillogin
+    );
 
-    const [buttonsenhacadcon, setbuttonsenhacadcon] = useState<boolean>(true);
+  if (!cliente) {
 
-    //Limpar dados 
-    const LimparDadosCad = () =>{
-      setnome('');
-      setcpf('');
-      setDataNascimento('');
-      settelefone('');
-      setemailcadastro('');
-      setsenhacad('');
-      setsenhacadCon('');
-      setbuttonsenhacad(true);
-      setbuttonsenhacadcon(true);
-    };
-    
-    //LOGIN
+    Alert.alert(
+      'Erro',
+      'Cliente não encontrado.'
+    );
 
-    const handleLogin = async () =>
-    {
-      const online = await VerificarServidor();
+    return;
 
-      if (!online) {
-        return;
-      }
+  }
 
-    
+  if (
+    cliente.senha !== senhaLogin
+  ) {
 
-      //Preencha os campos
-      if (!emaillogin || !senhaLogin) {
-        Alert.alert(
-          'Campos obrigatórios',
-          'Por favor, preencha e-mail e senha.',
-          [ 
-            {
-              text: 'OK',
-              onPress: () => console.log('Usuário fechou o alerta'),
-            },
-          ],
-          { cancelable: true }
-        );
+    Alert.alert(
+      'Erro',
+      'Senha incorreta.'
+    );
 
-        return;
+    return;
 
-      };
-   
-    };
+  }
 
-    //Cadastro
+  setUsuarioLogado(
+    cliente.cpf
+  );
 
-    const handleCadastro = async () =>{
-      
-      const online = await VerificarServidor();
+  navigation.navigate(
+    'Agendamento'
+  );
 
-      if (!online) {
-        return;
-      }
+};
 
-      if(!nome || !cpf || !dataNascimento || !emailcadastro || !telefone || !senhacad || !senhacadCon){
-        Alert.alert(
-          'Campos obrigatórios',
-          'Por favor, preencha todos os campos para o cadastro',
-          [
-            {
-              text: 'ok',
-              onPress: () => console.log('Usuário fechou o alerta'),
-              
-            },
-          ],
-          { cancelable: true }
+  //CADASTRO
+ const handleCadastro = async () => {
 
-        );
-        return;
-      }
+  if (
+    !nome ||
+    !cpf ||
+    !dataNascimento ||
+    !emailcadastro ||
+    !telefone ||
+    !senhacad ||
+    !senhacadCon
+  ) {
 
-      if (cpf.length != 14){
-        Alert.alert(
-          "CPF inválido",
-          "Por favor preencha o CPF corretamente!",
-          [
-            {
-              text: "ok",
-              onPress: () => console.log('Usuário fechou o alerta'),
+    Alert.alert(
+      'Campos obrigatórios',
+      'Preencha todos os campos.'
+    );
 
-            },
-          ],
-          {cancelable: true}
+    return;
 
-        )
-        return;
-      }
+  }
 
-      try{
+  if (cpf.length < 14) {
 
-        if (await CpfExistente('cliente',cpf)){
-          Alert.alert(
-            "CPF inválido",
-            "CPF já cadastrado!",
-            [
-              {
-                text: "ok",
-                onPress: () => console.log('Usuário fechou o alerta'),
+    Alert.alert(
+      'CPF inválido',
+      'Digite um CPF válido.'
+    );
 
-              },
-            ],
-            {cancelable: true}
+    return;
 
+  }
+
+  if (telefone.length < 15) {
+
+    Alert.alert(
+      'Telefone inválido',
+      'Digite um telefone válido.'
+    );
+
+    return;
+
+  }
+
+  if (dataNascimento.length < 10) {
+
+    Alert.alert(
+      'Data inválida',
+      'Digite a data corretamente.'
+    );
+
+    return;
+
+  }
+
+  if (senhacad !== senhacadCon) {
+
+    Alert.alert(
+      'Erro',
+      'As senhas não coincidem.'
+    );
+
+    return;
+
+  }
+
+  try {
+
+    salvarCliente(
+      cpf,
+      nome,
+      dataNascimento,
+      emailcadastro,
+      telefone,
+      senhacad
+    );
+
+    setUsuarioLogado(
+      cpf
+    );
+
+  } catch (error) {
+
+    Alert.alert(
+      'Erro',
+      'Já existe um cliente cadastrado com este CPF.'
+    );
+
+    return;
+
+  }
+
+  Alert.alert(
+    'Cadastro concluído ✨',
+    'Seu cadastro foi realizado com sucesso!',
+    [
+      {
+        text: 'Continuar',
+        onPress: () => {
+
+          LimparDadosCad();
+
+          navigation.navigate(
+            'Agendamento'
           );
-          return;
+
         }
-
-      }catch{
-        Alert.alert(
-          "Erro!",
-          "Erro ao verificar CPF!",
-          [
-            {
-              text: "ok",
-              onPress: () => console.log('Usuário fechou o alerta'),
-            },
-          ],
-          {cancelable: true}
-        );
-        return;
-
       }
-      
+    ]
+  );
 
-      
-      if (dataNascimento.length !=  10){
-        Alert.alert(
-          "Data de Nascimento inválida",
-          "Por favor preencha a Data de Nascimento corretamente!",
-          [
-            {
-              text: 'ok',
-              onPress: () => console.log('Usuário fechou o alerta'),
-            },
-          ],
-          {cancelable: true}
-        )
-        return;
-      }
+};
 
+  //CPF
+  const handleCpf = (text: string) => {
 
+    let numeros = text.replace(/\D/g, '');
 
+    numeros = numeros.slice(0, 11);
 
-      try{
-        if(await EmailExistente('cliente',emailcadastro)){
-          Alert.alert(
-            "E-mail inválido",
-            "E-mail já cadastrado!",
-            [
-              {
-                text: "ok",
-                onPress: () => console.log('Usuário fechou o alerta'),
-
-              },
-            ],
-            {cancelable: true}
-
-          );
-          return;
-        }
-      }catch{
-        Alert.alert(
-          "Erro!",
-          "Erro ao verificar E-mail!",
-          [
-            {
-              text: "ok",
-              onPress: () => console.log('Usuário fechou o alerta'),
-            },
-          ],
-          {cancelable: true}
-        );
-        return;
-      }
-
-
-      if(telefone.length != 15){
-        Alert.alert(
-          "Telefone inválido",
-          "Por favor preencha o campo Telefone corretamente!",
-          [
-            {
-              text: 'ok',
-              onPress: () => console.log('Usuário fechou o alerta'),
-            },
-          ],
-          {cancelable: true}
-        )
-        return;
-      }
-
-      if (senhacad != senhacadCon){
-        Alert.alert(
-          "Erro",
-          "As senhas não coincidem!",
-          [
-            {
-              text: 'ok',
-              onPress: () => console.log('Usuário fechou o alerta'),
-            },
-          ],
-          {cancelable: true}
-        )
-        return;
-      }
-
-      
-
-      try{
-        if(await cadastrar('cliente', nome, cpf, dataNascimento, emailcadastro, telefone, senhacad)){
-          Alert.alert(
-            "Cadastro concluído",
-            "Os dados foram cadastrados, volte ao login para entrar no app!",
-            [
-              {
-                text: "ok",
-                onPress: () => console.log('Cadastro concluído'),
-
-              },
-            ],
-            {cancelable: true}
-
-          );
-          
-        }
-      }catch(error){
-        Alert.alert(
-          "Erro!",
-          "Erro ao cadastrar",
-          [
-            {
-              text: "ok",
-              onPress: () => console.log('Usuário fechou o alerta'),
-            },
-          ],
-          {cancelable: true}
-        );
-        return;
-      }
-      LimparDadosCad();
-    
-    };
-
-    const handleCpf = (text: string) => {
-      let numeros = text.replace(/\D/g, '');
-
-      numeros = numeros.slice(0, 11);
-
-      let formatado = numeros
+    let formatado = numeros
       .replace(/(\d{3})(\d)/, '$1.$2')
       .replace(/(\d{3})(\d)/, '$1.$2')
       .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
 
-      setcpf(formatado);
+    setcpf(formatado);
 
-    };
+  };
 
-    const handleTelefone = (text: string) => {
-      let numeros = text.replace(/\D/g, '');
+  //TELEFONE
+  const handleTelefone = (text: string) => {
 
-  
-      numeros = numeros.slice(0, 11);
+    let numeros = text.replace(/\D/g, '');
 
-      let formatado = numeros;
+    numeros = numeros.slice(0, 11);
 
-      if (numeros.length > 0) {
-        formatado = numeros.replace(/^(\d{2})/, '($1)');
-      }
+    let formatado = numeros;
 
-      if (numeros.length > 2) {
-        formatado = formatado.replace(/^(\(\d{2}\))(\d)/, '$1 $2');
-      }
+    if (numeros.length > 0) {
+      formatado = numeros.replace(/^(\d{2})/, '($1)');
+    }
 
-      if (numeros.length > 7) {
-        formatado = formatado.replace(/(\d{5})(\d)/, '$1-$2');
-      }
+    if (numeros.length > 2) {
+      formatado = formatado.replace(/^(\(\d{2}\))(\d)/, '$1 $2');
+    }
 
-      settelefone(formatado);
-    };
+    if (numeros.length > 7) {
+      formatado = formatado.replace(/(\d{5})(\d)/, '$1-$2');
+    }
 
-    const handleData = (text: string) => {
-      const numeros = text.replace(/\D/g, '').slice(0, 8);
+    settelefone(formatado);
 
-      const dia = numeros.slice(0, 2);
-      const mes = numeros.slice(2, 4);
-      const ano = numeros.slice(4, 8);
+  };
 
-      let resultado = dia;
+  //DATA
+  const handleData = (text: string) => {
 
-      if (mes) resultado += '/' + mes;
-      if (ano) resultado += '/' + ano;
+    const numeros = text.replace(/\D/g, '').slice(0, 8);
 
-      setDataNascimento(resultado);
-    };
-    
+    const dia = numeros.slice(0, 2);
+    const mes = numeros.slice(2, 4);
+    const ano = numeros.slice(4, 8);
+
+    let resultado = dia;
+
+    if (mes) resultado += '/' + mes;
+    if (ano) resultado += '/' + ano;
+
+    setDataNascimento(resultado);
+
+  };
 
   return (
 
-    <View style = {styles.container}>
-        
-        {login ? (
-          //-------LOGIN----------
-          <View style = {styles.login} >
-            
-            <View style = {styles.title_container}>
-              <Text style = {styles.title}>Login</Text>
-            </View>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+      showsVerticalScrollIndicator={false}
+    >
 
-            <Text style = { styles.text }>E-mail</Text>
+      {login ? (
 
-            <TextInput value={emaillogin || ''} onChangeText={setemaillogin} placeholder='Exemplo@gmail.com' style = {styles.input} />
-            
-            <Text style = {styles.text}>Senha</Text>
-            
-            <View style = {styles.senha}>
+        //LOGIN
+        <View style={styles.login}>
 
-              <TextInput value={senhaLogin || ''} onChangeText={setsenhalogin} 
-              secureTextEntry = {buttonsenhalogin} style = {styles.input_senha}/>
+          <View style={styles.title_container}>
 
-              <Pressable onPress={() => {setbuttonsenhalogin(!buttonsenhalogin)}}>
-                <View style={{ marginLeft: 10 }}>
-                  {buttonsenhalogin ? (
-                    <Image style = {styles.senha_imagem} source={require('../../img/olhofechado.png')} />
-                  ) : (
-                    <Image style = {styles.senha_imagem} source={require('../../img/olhoaberto.png')} />
+            <Text style={styles.title}>
+              Login
+            </Text>
+
+          </View>
+
+          <Text style={styles.text}>
+            E-mail
+          </Text>
+
+          <TextInput
+            value={emaillogin}
+            onChangeText={setemaillogin}
+            placeholder='Exemplo@gmail.com'
+            style={styles.input}
+          />
+
+          <Text style={styles.text}>
+            Senha
+          </Text>
+
+          <View style={styles.senha}>
+
+            <TextInput
+              value={senhaLogin}
+              onChangeText={setsenhalogin}
+              secureTextEntry={buttonsenhalogin}
+              style={styles.input_senha}
+            />
+
+            <Pressable
+              onPress={() => {
+                setbuttonsenhalogin(!buttonsenhalogin)
+              }}
+            >
+
+              <View style={{ marginLeft: 10 }}>
+
+                {buttonsenhalogin ? (
+
+                  <Image
+                    style={styles.senha_imagem}
+                    source={require('../../img/olhofechado.png')}
+                  />
+
+                ) : (
+
+                  <Image
+                    style={styles.senha_imagem}
+                    source={require('../../img/olhoaberto.png')}
+                  />
+
                 )}
-                </View>
-              </Pressable>
-            
-            </View>
-            
-
-            <View style = {styles.buttons}>
-
-              <Pressable onPress={handleLogin}
-              
-                style={({pressed}) => [
-                {
-                  backgroundColor: pressed ? '#e972d1' : '#ffffff6c',
-                },
-                styles.button_item,
-                ]}>
-                
-                {({ pressed }) => (
-                  <Text
-                  style={{
-                    fontSize: 18,
-                    color: pressed ? '#ffffff' : '#a07e28',
-                    fontWeight: 'bold'
-                  }}
-                  >
-                  Entrar
-                  </Text>
-                )}
-
-              </Pressable>
-
-              <Pressable
-                onPress={() => setlogin(!login)}
-                style={({pressed}) => [
-                {
-                  backgroundColor: pressed ? '#e972d1' : '#ffffff6c',
-                },
-                styles.button_item,
-                ]}>
-                
-                {({ pressed }) => (
-                  <Text
-                  style={{
-                    fontSize: 18,
-                    color: pressed ? '#ffffff' : '#a07e28',
-                    fontWeight: 'bold'
-                  }}
-                  >
-                  Cadastrar 
-                  </Text>
-                )}
-
-              </Pressable>
-
-            </View>
-            
-
-        </View>
-
-        ) : (
-          //----CADASTRO----
-          <View style = {styles.cadastro} >
-            
-            <View style = {styles.title_container}>
-              <Text style = {styles.title}>Cadastro</Text>
-            </View>
-
-            <ScrollView contentContainerStyle = {styles.cadastro_scroll}
-              horizontal={false} showsHorizontalScrollIndicator={false}>
-              
-              <View style ={styles.dentro_cad_scroll}>
-            
-                <Text style = { styles.text }>Nome Completo</Text>
-
-                <TextInput value={nome || ''} onChangeText={setnome} placeholder='' style = {styles.input} />
-            
-                <Text style = {styles.text}>CPF</Text>
-            
-                <TextInput placeholder=''  style = {styles.input} value={cpf || ''} maxLength={14} onChangeText={handleCpf} keyboardType='numeric' />
-
-                <Text style = {styles.text}>Data de Nascimento</Text>
-            
-                <TextInput placeholder='' value={dataNascimento || ''} onChangeText={handleData} keyboardType='numeric' style = {styles.input} />
-
-                <Text style = {styles.text}>E-mail </Text>
-            
-                <TextInput placeholder='' value={emailcadastro || ''} onChangeText={setemailcadastro} style = {styles.input} />
-
-                <Text style = {styles.text}>Telefone / Whatsapp </Text>
-            
-                <TextInput placeholder='' value={telefone || ''} onChangeText={handleTelefone} keyboardType='numeric' maxLength={15} style = {styles.input} />
-
-                <Text style = {styles.text}>Senha </Text>
-
-                <View style = {styles.senha}>
-
-                  <TextInput value={senhacad || ''} onChangeText={setsenhacad} 
-                    secureTextEntry = {buttonsenhacad} style = {styles.input_senha}/>
-
-                  <Pressable onPress={() => {setbuttonsenhacad(!buttonsenhacad)}}>
-                    <View style={{ marginLeft: 10 }}>
-                    {buttonsenhacad ? (
-                      <Image style = {styles.senha_imagem} source={require('../../img/olhofechado.png')} />
-                    ) : (
-                      <Image style = {styles.senha_imagem} source={require('../../img/olhoaberto.png')} />
-                    )}
-                    </View>
-                  </Pressable>
-            
-                </View>
-
-                <Text style = {styles.text}>Confirmar Senha </Text>
-
-                <View style = {styles.senha}>
-
-                  <TextInput value={senhacadCon || ''} onChangeText={setsenhacadCon} 
-                    secureTextEntry = {buttonsenhacadcon} style = {styles.input_senha}/>
-
-                  <Pressable onPress={() => {setbuttonsenhacadcon(!buttonsenhacadcon)}}>
-                    <View style={{ marginLeft: 10 }}>
-                    {buttonsenhacadcon ? (
-                      <Image style = {styles.senha_imagem} source={require('../../img/olhofechado.png')} />
-                    ) : (
-                      <Image style = {styles.senha_imagem} source={require('../../img/olhoaberto.png')} />
-                    )}
-                    </View>
-                  </Pressable>
-            
-                </View>
-
-                <View style = {styles.buttons}>
-
-                  <Pressable
-                    onPress={() => setlogin(!login)}
-                    style={({pressed}) => [
-                    {
-                      backgroundColor: pressed ? '#e972d1' : '#ffffff6c',
-                    },
-                    styles.button_item,
-                    ]}>
-                
-                    {({ pressed }) => (
-                      <Text
-                      style={{
-                        fontSize: 18,
-                        color: pressed ? '#ffffff' : '#a07e28',
-                        fontWeight: 'bold'
-                      }}
-                      >
-                        Voltar
-                      </Text>
-                    )}
-
-                  </Pressable>
-
-                  <Pressable
-                    onPress={handleCadastro}
-                    style={({pressed}) => [
-                    {
-                      backgroundColor: pressed ? '#e972d1' : '#ffffff6c',
-                    },
-                    styles.button_item,
-                    ]}>
-                
-                    {({ pressed }) => (
-                      <Text
-                      style={{
-                        fontSize: 18,
-                        color: pressed ? '#ffffff' : '#a07e28',
-                        fontWeight: 'bold'
-                      }}
-                      >
-                        Cadastrar 
-                      </Text>
-                    )}
-
-                  </Pressable>
-              
-                </View>
 
               </View>
-            </ScrollView>
+
+            </Pressable>
+
+          </View>
+
+          <View style={styles.buttons}>
+
+            <Pressable
+              onPress={handleLogin}
+              style={styles.button_item}
+            >
+
+              <Text
+                style={{
+                  color: '#fff',
+                  fontWeight: '700',
+                  fontSize: 16,
+                }}
+              >
+                Entrar
+              </Text>
+
+            </Pressable>
+
+            <Pressable
+              onPress={() => setlogin(false)}
+              style={styles.button_item}
+            >
+
+              <Text
+                style={{
+                  color: '#fff',
+                  fontWeight: '700',
+                  fontSize: 16,
+                }}
+              >
+                Cadastrar
+              </Text>
+
+            </Pressable>
+
+          </View>
+
         </View>
-        ) }
 
-        
-        
-      
+      ) : (
 
-      <StatusBar style="auto" />
-    
-    </View>
+        //CADASTRO
+        <View style={styles.cadastro}>
+
+          <View style={styles.title_container}>
+
+            <Text style={styles.title}>
+              Cadastro
+            </Text>
+
+          </View>
+
+          <ScrollView
+            contentContainerStyle={styles.cadastro_scroll}
+            showsVerticalScrollIndicator={false}
+          >
+
+            <View style={styles.dentro_cad_scroll}>
+
+              <Text style={styles.text}>
+                Nome Completo
+              </Text>
+
+              <TextInput
+                value={nome}
+                onChangeText={setnome}
+                style={styles.input}
+              />
+
+              <Text style={styles.text}>
+                CPF
+              </Text>
+
+              <TextInput
+                value={cpf}
+                onChangeText={handleCpf}
+                style={styles.input}
+                keyboardType='numeric'
+                maxLength={14}
+              />
+
+              <Text style={styles.text}>
+                Data de Nascimento
+              </Text>
+
+              <TextInput
+                value={dataNascimento}
+                onChangeText={handleData}
+                style={styles.input}
+                keyboardType='numeric'
+              />
+
+              <Text style={styles.text}>
+                E-mail
+              </Text>
+
+              <TextInput
+                value={emailcadastro}
+                onChangeText={setemailcadastro}
+                style={styles.input}
+              />
+
+              <Text style={styles.text}>
+                Telefone / Whatsapp
+              </Text>
+
+              <TextInput
+                value={telefone}
+                onChangeText={handleTelefone}
+                style={styles.input}
+                keyboardType='numeric'
+                maxLength={15}
+              />
+
+              <Text style={styles.text}>
+                Senha
+              </Text>
+
+              <View style={styles.senha}>
+
+                <TextInput
+                  value={senhacad}
+                  onChangeText={setsenhacad}
+                  secureTextEntry={buttonsenhacad}
+                  style={styles.input_senha}
+                />
+
+                <Pressable
+                  onPress={() => {
+                    setbuttonsenhacad(!buttonsenhacad)
+                  }}
+                >
+
+                  <Image
+                    style={styles.senha_imagem}
+                    source={
+                      buttonsenhacad
+                        ? require('../../img/olhofechado.png')
+                        : require('../../img/olhoaberto.png')
+                    }
+                  />
+
+                </Pressable>
+
+              </View>
+
+              <Text style={styles.text}>
+                Confirmar Senha
+              </Text>
+
+              <View style={styles.senha}>
+
+                <TextInput
+                  value={senhacadCon}
+                  onChangeText={setsenhacadCon}
+                  secureTextEntry={buttonsenhacadcon}
+                  style={styles.input_senha}
+                />
+
+                <Pressable
+                  onPress={() => {
+                    setbuttonsenhacadcon(!buttonsenhacadcon)
+                  }}
+                >
+
+                  <Image
+                    style={styles.senha_imagem}
+                    source={
+                      buttonsenhacadcon
+                        ? require('../../img/olhofechado.png')
+                        : require('../../img/olhoaberto.png')
+                    }
+                  />
+
+                </Pressable>
+
+              </View>
+
+              <View style={styles.buttons}>
+
+                <Pressable
+                  onPress={() => setlogin(true)}
+                  style={styles.button_item}
+                >
+
+                  <Text
+                    style={{
+                      color: '#fff',
+                      fontWeight: '700',
+                      fontSize: 16,
+                    }}
+                  >
+                    Voltar
+                  </Text>
+
+                </Pressable>
+
+                <Pressable
+                  onPress={handleCadastro}
+                  style={styles.button_item}
+                >
+
+                  <Text
+                    style={{
+                      color: '#fff',
+                      fontWeight: '700',
+                      fontSize: 16,
+                    }}
+                  >
+                    Cadastrar
+                  </Text>
+
+                </Pressable>
+
+              </View>
+
+            </View>
+
+          </ScrollView>
+
+        </View>
+
+      )}
+
+      <StatusBar style="dark" />
+
+    </ScrollView>
   );
 }
