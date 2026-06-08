@@ -221,6 +221,19 @@ export default function Home({ navigation }: any) {
   </Text>
 </TouchableOpacity>
 
+<TouchableOpacity
+  style={styles.secondaryHomeButton}
+  onPress={() =>
+    navigation.navigate('AdminLogin')
+  }
+>
+
+  <Text style={styles.secondaryHomeButtonText}>
+    Área Administrativa
+  </Text>
+
+</TouchableOpacity>
+
       </ScrollView>
 
       <StatusBar style="dark" />
