@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
-  obterBannerPrincipal,
+  listarBanners,
 } from '../../../global/database/banner';
 import { StatusBar } from 'expo-status-bar';
 
@@ -21,21 +21,49 @@ import {
 export default function Home({ navigation }: any) {
 
   const [projetos, setProjetos] = useState<any[]>([]);
-  const [banner, setBanner] = useState<any>(null);
+ const [banners, setBanners] = useState<any[]>([]);
+const [bannerAtual, setBannerAtual] = useState(0);
   useEffect(() => {
 
   const dados = listarProjetos();
 
   setProjetos(dados || []);
 
-  const bannerBanco =
-    obterBannerPrincipal();
+  const bannersBanco =
+    listarBanners();
 
-  setBanner(bannerBanco);
+  setBanners(bannersBanco || []);
 
 }, []);
 
-  return (
+useEffect(() => {
+
+  if (banners.length <= 1) return;
+
+  const intervalo = setInterval(() => {
+
+    setBannerAtual((atual) => {
+
+      if (
+        atual >= banners.length - 1
+      ) {
+
+        return 0;
+
+      }
+
+      return atual + 1;
+
+    });
+
+  }, 3000);
+
+  return () =>
+    clearInterval(intervalo);
+
+}, [banners]);
+
+return (
 
     <View style={styles.container}>
 
@@ -78,12 +106,17 @@ export default function Home({ navigation }: any) {
             com elegância, conforto e personalidade.
           </Text>
 
-          <Image
+         <Image
   style={styles.banner}
   source={{
     uri:
-      banner?.imagem ||
-      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85'
+
+      banners.length > 0
+
+        ? banners[bannerAtual].imagem
+
+        : 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85'
+
   }}
 />
         </View>

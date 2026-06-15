@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Linking,
 } from 'react-native';
 
 import styles from './style';
@@ -116,6 +117,46 @@ export default function AgendamentosAdmin() {
     );
 
   }
+  function abrirWhatsApp(item: any) {
+
+  const telefone =
+  (item.telefone || '').replace(/\D/g, '');
+
+if (telefone.length < 10) {
+
+  Alert.alert(
+    'Telefone inválido',
+    'O cliente não possui um telefone válido.'
+  );
+
+  return;
+
+}
+
+  const mensagem =
+`Olá, ${item.nome}! 👋
+
+Somos da Monique Design.
+
+Estamos entrando em contato sobre o seu atendimento referente ao projeto de ${item.tipo || 'Interior'}, agendado para o dia ${item.data} às ${item.horario}.
+
+Caso tenha alguma dúvida ou precise alterar alguma informação, nossa equipe está à disposição.
+
+Será um prazer atendê-lo!`;
+
+  const url =
+    `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
+
+Linking.openURL(url).catch(() => {
+
+  Alert.alert(
+    'Erro',
+    'Não foi possível abrir o WhatsApp.'
+  );
+
+});
+
+}
 
   return (
 
@@ -163,7 +204,29 @@ export default function AgendamentosAdmin() {
             <Text style={styles.value}>
               {item.telefone}
             </Text>
+            <TouchableOpacity
+  style={{
+    backgroundColor: '#25D366',
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    alignItems: 'center',
+  }}
+  onPress={() => abrirWhatsApp(item)}
+>
 
+  <Text
+    style={{
+      color: '#fff',
+      fontWeight: 'bold',
+      fontSize: 15,
+    }}
+  >
+    💬 Abrir WhatsApp
+  </Text>
+
+</TouchableOpacity>
             <Text style={styles.label}>
               E-mail
             </Text>
@@ -178,6 +241,14 @@ export default function AgendamentosAdmin() {
 
             <Text style={styles.value}>
               {item.dataNascimento}
+            </Text>
+            
+             <Text style={styles.label}>
+             Ambiente
+            </Text>
+
+            <Text style={styles.value}>
+            {item.tipo || 'Não informado'}
             </Text>
 
             <Text style={styles.label}>

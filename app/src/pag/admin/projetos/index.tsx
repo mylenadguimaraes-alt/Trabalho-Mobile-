@@ -20,6 +20,10 @@ import {
   excluirProjeto,
 } from '../../../global/database/projeto';
 
+import {
+  uploadImagem,
+} from '../../../global/cloudinary/uploadImagem';
+
 export default function ProjetosAdmin() {
 
   const [titulo, setTitulo] = useState('');
@@ -48,7 +52,8 @@ export default function ProjetosAdmin() {
     const resultado =
       await ImagePicker.launchImageLibraryAsync({
 
-        mediaTypes: ['images'],
+        mediaTypes:
+          ImagePicker.MediaTypeOptions.Images,
 
         allowsEditing: true,
 
@@ -68,9 +73,12 @@ export default function ProjetosAdmin() {
 
   function carregar() {
 
-    const dados = listarProjetos();
+    const dados =
+      listarProjetos();
 
-    setProjetos(dados || []);
+    setProjetos(
+      dados || []
+    );
 
   }
 
@@ -80,7 +88,7 @@ export default function ProjetosAdmin() {
 
   }, []);
 
-  function salvar() {
+  async function salvar() {
 
     if (
       !titulo ||
@@ -98,24 +106,45 @@ export default function ProjetosAdmin() {
 
     }
 
-    criarProjeto(
-      titulo,
-      categoria,
-      descricao,
-      imagem
-    );
+    try {
 
-    Alert.alert(
-      'Sucesso',
-      'Projeto cadastrado com sucesso.'
-    );
+      Alert.alert(
+        'Aguarde',
+        'Enviando imagem para a nuvem...'
+      );
 
-    setTitulo('');
-    setCategoria('');
-    setDescricao('');
-    setImagem('');
+      const urlImagem =
+        await uploadImagem(imagem);
 
-    carregar();
+      criarProjeto(
+        titulo,
+        categoria,
+        descricao,
+        urlImagem
+      );
+
+      Alert.alert(
+        'Sucesso',
+        'Projeto cadastrado com sucesso.'
+      );
+
+      setTitulo('');
+      setCategoria('');
+      setDescricao('');
+      setImagem('');
+
+      carregar();
+
+    } catch (error) {
+
+      console.log(error);
+
+      Alert.alert(
+        'Erro',
+        'Falha ao enviar imagem para o Cloudinary.'
+      );
+
+    }
 
   }
 
@@ -210,6 +239,22 @@ export default function ProjetosAdmin() {
             {item.categoria}
           </Text>
 
+          {item.imagem ? (
+
+            <Image
+              source={{
+                uri: item.imagem,
+              }}
+              style={{
+                width: '100%',
+                height: 150,
+                borderRadius: 10,
+                marginTop: 10,
+              }}
+            />
+
+          ) : null}
+
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={() =>
@@ -230,4 +275,5 @@ export default function ProjetosAdmin() {
     </ScrollView>
 
   );
+
 }

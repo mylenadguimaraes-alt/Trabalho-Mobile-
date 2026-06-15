@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 
+import * as ImagePicker from 'expo-image-picker';
+
 import {
   ScrollView,
   View,
   Text,
   TextInput,
   TouchableOpacity,
+  Alert,
+  Image,
 } from 'react-native';
 
 import styles from './style';
@@ -15,6 +19,10 @@ import {
   criarBanner,
   excluirBanner,
 } from '../../../global/database/banner';
+
+import {
+  uploadImagem,
+} from '../../../global/cloudinary/uploadImagem';
 
 export default function BannersAdmin() {
 
@@ -37,17 +45,108 @@ export default function BannersAdmin() {
 
   }, []);
 
-  function salvar() {
+  async function selecionarImagem() {
 
-    criarBanner(
-      titulo,
-      imagem
-    );
+    const permissao =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    setTitulo('');
-    setImagem('');
+    if (!permissao.granted) {
+
+      Alert.alert(
+        'Permissão necessária',
+        'Permita acesso à galeria.'
+      );
+
+      return;
+
+    }
+
+    const resultado =
+      await ImagePicker.launchImageLibraryAsync({
+
+        mediaTypes:
+          ImagePicker.MediaTypeOptions.Images,
+
+        allowsEditing: true,
+
+        quality: 1,
+
+      });
+
+    if (!resultado.canceled) {
+
+      setImagem(
+        resultado.assets[0].uri
+      );
+
+    }
+
+  }
+
+  async function salvar() {
+
+    if (
+      !titulo ||
+      !imagem
+    ) {
+
+      Alert.alert(
+        'Atenção',
+        'Preencha todos os campos.'
+      );
+
+      return;
+
+    }
+
+    try {
+
+      Alert.alert(
+        'Aguarde',
+        'Enviando imagem...'
+      );
+
+      const urlImagem =
+        await uploadImagem(imagem);
+
+      criarBanner(
+        titulo,
+        urlImagem
+      );
+
+      Alert.alert(
+        'Sucesso',
+        'Banner cadastrado.'
+      );
+
+      setTitulo('');
+      setImagem('');
+
+      carregar();
+
+    } catch (error) {
+
+      console.log(error);
+
+      Alert.alert(
+        'Erro',
+        'Falha ao enviar imagem.'
+      );
+
+    }
+
+  }
+
+  function excluir(id: number) {
+
+    excluirBanner(id);
 
     carregar();
+
+    Alert.alert(
+      'Sucesso',
+      'Banner removido.'
+    );
 
   }
 
@@ -66,12 +165,32 @@ export default function BannersAdmin() {
         onChangeText={setTitulo}
       />
 
-      <TextInput
-        style={styles.input}
-        placeholder="URL da imagem"
-        value={imagem}
-        onChangeText={setImagem}
-      />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={selecionarImagem}
+      >
+
+        <Text style={styles.buttonText}>
+          📷 Escolher Imagem
+        </Text>
+
+      </TouchableOpacity>
+
+      {imagem !== '' && (
+
+        <Image
+          source={{
+            uri: imagem,
+          }}
+          style={{
+            width: '100%',
+            height: 180,
+            borderRadius: 10,
+            marginBottom: 15,
+          }}
+        />
+
+      )}
 
       <TouchableOpacity
         style={styles.button}
@@ -95,10 +214,26 @@ export default function BannersAdmin() {
             {item.titulo}
           </Text>
 
+          {item.imagem ? (
+
+            <Image
+              source={{
+                uri: item.imagem,
+              }}
+              style={{
+                width: '100%',
+                height: 150,
+                borderRadius: 10,
+                marginTop: 10,
+              }}
+            />
+
+          ) : null}
+
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={() =>
-              excluirBanner(item.id)
+              excluir(item.id)
             }
           >
 
@@ -115,4 +250,5 @@ export default function BannersAdmin() {
     </ScrollView>
 
   );
+
 }

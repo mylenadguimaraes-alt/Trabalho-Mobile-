@@ -2,6 +2,7 @@ import { db } from './conexaobd';
 
 export const salvarAgendamento = (
   cpfCliente: string,
+  tipo: string,
   data: string,
   horario: string
 ) => {
@@ -13,6 +14,7 @@ export const salvarAgendamento = (
     INSERT INTO agendamento
     (
       cpf_cliente,
+      tipo,
       data,
       horario,
       status
@@ -22,11 +24,13 @@ export const salvarAgendamento = (
       ?,
       ?,
       ?,
+      ?,
       ?
     )
     `,
     [
       cpfCliente,
+      tipo,
       data,
       horario,
       'Confirmado'
@@ -125,6 +129,7 @@ export const buscarAgendamento = (
   return resultado[0];
 
 };
+
 export const listarAgendamentosCliente = (
   cpfCliente: string
 ) => {
@@ -142,6 +147,7 @@ export const listarAgendamentosCliente = (
   );
 
 };
+
 export const verificarHorarioOcupado = (
   data: string,
   horario: string
@@ -154,8 +160,8 @@ export const verificarHorarioOcupado = (
     SELECT *
     FROM agendamento
     WHERE data = ?
-    AND horario = ?
-    AND status != 'Cancelado'
+      AND horario = ?
+      AND status != 'Cancelado'
     `,
     [
       data,

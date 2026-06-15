@@ -31,6 +31,7 @@ export default function Agendamento() {
 
   const [dataSelecionada, setDataSelecionada] = useState('');
   const [horarioSelecionado, setHorarioSelecionado] = useState('');
+  const [tipoAmbiente, setTipoAmbiente] = useState('');
 
   const [horarios, setHorarios] = useState<any[]>([]);
 
@@ -44,11 +45,15 @@ export default function Agendamento() {
 
   const confirmarAgendamento = () => {
 
-  if (!dataSelecionada || !horarioSelecionado) {
+if (
+  !tipoAmbiente ||
+  !dataSelecionada ||
+  !horarioSelecionado
+) {
 
     Alert.alert(
       'Atenção',
-      'Selecione uma data e um horário.'
+     'Selecione o ambiente, a data e o horário.'
     );
 
     return;
@@ -87,10 +92,11 @@ if (ocupado) {
 }
 
     salvarAgendamento(
-      cpfCliente,
-      dataSelecionada,
-      horarioSelecionado
-    );
+  cpfCliente,
+  tipoAmbiente,
+  dataSelecionada,
+  horarioSelecionado
+);
 
     setAgendado(true);
 
@@ -191,7 +197,53 @@ if (ocupado) {
           />
 
         </View>
+<Text style={styles.sectionTitle}>
+  Ambiente
+</Text>
 
+<ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  style={styles.hoursContainer}
+>
+
+  {[
+    'Sala',
+    'Quarto',
+    'Cozinha',
+    'Banheiro',
+    'Escritório',
+    'Área Externa',
+    'Outro',
+  ].map((item) => (
+
+    <TouchableOpacity
+      key={item}
+      style={[
+        styles.hourButton,
+        tipoAmbiente === item &&
+        styles.hourButtonSelected,
+      ]}
+      onPress={() =>
+        setTipoAmbiente(item)
+      }
+    >
+
+      <Text
+        style={[
+          styles.hourText,
+          tipoAmbiente === item &&
+          styles.hourTextSelected,
+        ]}
+      >
+        {item}
+      </Text>
+
+    </TouchableOpacity>
+
+  ))}
+
+</ScrollView>
         <Text style={styles.sectionTitle}>
           Horários Disponíveis
         </Text>
@@ -240,6 +292,9 @@ if (ocupado) {
 
           <View style={styles.selectedInfo}>
 
+           <Text style={styles.selectedText}>
+            Ambiente: {tipoAmbiente || 'Não selecionado'}
+            </Text>
             <Text style={styles.selectedText}>
                Data: {dataSelecionada || 'Não selecionada'}
             </Text>
@@ -270,7 +325,10 @@ if (ocupado) {
             <Text style={styles.appointmentTitle}>
               Meu Agendamento
             </Text>
-
+            
+             <Text style={styles.appointmentText}>
+             Ambiente: {tipoAmbiente}
+            </Text>
             <Text style={styles.appointmentText}>
                Data: {dataSelecionada}
             </Text>
